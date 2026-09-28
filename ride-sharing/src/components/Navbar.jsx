@@ -5,8 +5,10 @@ function Navbar(){
         <>
             <div className="navbar">
                 <nav>
-                    <a href="#"> Home </a>
-                    <a href="#"> New Request </a>
+                    <link to="/"> Home </link>
+                    <link to="/new-request"> New Request </link>
+                    <link to="/cancel-request"> Cancel Request </link>
+                    <link to="/cancel-ride"> Cancel Ride </link>
                 </nav>
             </div>
         </>
