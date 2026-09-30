@@ -1,4 +1,4 @@
-import useState from "react";
+import {useState} from "react";
 function Member(){
     const [members, setMembers] = useState(1);
     function decrease(){
@@ -14,7 +14,7 @@ function Member(){
     return(
         <>
             <div className="member">
-                <p>How many members do you want?</p>
+                <h1>How many members do you want?</h1>
                 <button onClick={decrease} disabled={members===1}>-</button>
                 <span>{members}</span>
                 <button onClick={increase} disabled={members===3}>+</button>

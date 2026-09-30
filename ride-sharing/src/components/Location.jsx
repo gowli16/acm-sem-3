@@ -3,7 +3,7 @@ function Location(){
     return(
         <>
             <div className="location">
-                <p>Where do you want to go?</p>
+                <h1>Where do you want to go?</h1>
                 <select>
                     <option value="Kayamkulam">Kayamkulam</option>
                     <option value="Karunagapalli">Karunagapalli</option>
