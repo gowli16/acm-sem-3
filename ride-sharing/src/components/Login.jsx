@@ -1,24 +1,74 @@
-import {useNavigate} from "react-router-dom";
-function Login(){
-    const navigate = useNavigate();
-    return(
-        <>
-            <div className="login">
-                <form>
-                    <input type="text" placeholder="username"/>
-                    <br/>
-                    <input type="password" placeholder="password"/>
-                    <br/>
-                    <button type="submit">Login</button>
-                    <br/>
-                    <button type="submit" onClick={() => navigate("/signup")}>
-                        click here to signup!!
-                    </button>
-                </form>
-            </div>
-        </>
-    );
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
+function Login() {
+    const navigate = useNavigate();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [message, setMessage] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    async function handleSubmit(event) {
+        event.preventDefault();
+        const normalizedEmail = email.trim().toLowerCase();
+
+        if (!normalizedEmail.endsWith("@am.students.amrita.edu")) {
+            setMessage("Please use your Amrita ID");
+            return;
+        }
+
+        setIsSubmitting(true);
+        setMessage("");
+
+        try {
+            const response = await fetch("http://localhost:5000/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: normalizedEmail, password })
+            });
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.message || "Login failed");
+
+            localStorage.setItem("userId", data.id);
+            localStorage.setItem("userEmail", data.email);
+            navigate("/dashboard");
+        } catch (error) {
+            setMessage(error.message || "Could not connect to the server");
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <div className="login">
+            <form onSubmit={handleSubmit} noValidate>
+                <input
+                    type="email"
+                    placeholder="Amrita email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    required
+                />
+                <br />
+                <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    required
+                />
+                <br />
+                <button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? "Logging in..." : "Login"}
+                </button>
+                {message && <p role="alert">{message}</p>}
+                <button type="button" onClick={() => navigate("/signup")}>
+                    click here to signup!!
+                </button>
+            </form>
+        </div>
+    );
 }
 
 export default Login;
