@@ -5,8 +5,8 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #b8b7b5;
-    color: #664930;
+    background-color: #FFF5F7;
+    color: #763A50;
 }
 
 nav {
@@ -14,8 +14,8 @@ nav {
     max-width: 900px;
     margin: 25px auto;
     padding: 8px;
-    background-color: #664930;
-    border: 3px solid #664930;
+    background-color: #763A50;
+    border: 3px solid #763A50;
     border-radius: 40px;
     display: flex;
     align-items: center;
@@ -24,7 +24,7 @@ nav {
 }
 
 nav a {
-    color: #ebe9e8;
+    color: #FFF7F8;
     text-decoration: none;
     font-size: 15px;
     padding: 8px 12px;
@@ -39,7 +39,7 @@ nav a:hover {
     background-color: white;
     padding: 35px;
     border-radius: 10px;
-    border: 2px solid #997E67;
+    border: 2px solid #D493A7;
     text-align: center;
 }
 
@@ -48,18 +48,18 @@ nav a:hover {
 }
 
 .location h1 {
-    color: #664930;
+    color: #763A50;
     margin-bottom: 25px;
 }
 
 .location select {
     width: 250px;
     padding: 10px;
-    border: 2px solid #997E67;
+    border: 2px solid #D493A7;
     border-radius: 6px;
     font-size: 16px;
-    background-color: #FFDBBB;
-    color: #664930;
+    background-color: #F6D7E0;
+    color: #763A50;
 }
 
 .date {
@@ -67,13 +67,13 @@ nav a:hover {
 }
 
 .date h1 {
-    color: #664930;
+    color: #763A50;
     margin-bottom: 25px;
 }
 
 .date input {
     padding: 10px;
-    border: 2px solid #997E67;
+    border: 2px solid #D493A7;
     border-radius: 6px;
     font-size: 16px;
 }
@@ -83,7 +83,7 @@ nav a:hover {
 }
 
 .member h1 {
-    color: #664930;
+    color: #763A50;
     margin-bottom: 25px;
 }
 
@@ -92,18 +92,18 @@ nav a:hover {
     height: 40px;
     border: none;
     border-radius: 6px;
-    background-color: #664930;
-    color: #FFDBBB;
+    background-color: #763A50;
+    color: #F6D7E0;
     font-size: 22px;
     cursor: pointer;
 }
 
 .member button:hover {
-    background-color: #997E67;
+    background-color: #D493A7;
 }
 
 .member button:disabled {
-    background-color: #997E67;
+    background-color: #D493A7;
     cursor: not-allowed;
 }
 
@@ -119,7 +119,7 @@ nav a:hover {
 }
 
 .train h1 {
-    color: #664930;
+    color: #763A50;
     margin-bottom: 25px;
 }
 
@@ -133,7 +133,7 @@ nav a:hover {
 .train input {
     width: 250px;
     padding: 10px;
-    border: 2px solid #997E67;
+    border: 2px solid #D493A7;
     border-radius: 6px;
     font-size: 16px;
 }
@@ -143,14 +143,14 @@ nav a:hover {
     padding: 10px 25px;
     border: none;
     border-radius: 6px;
-    background-color: #664930;
-    color: #FFDBBB;
+    background-color: #763A50;
+    color: #F6D7E0;
     font-size: 16px;
     cursor: pointer;
 }
 
 .train button:hover {
-    background-color: #997E67;
+    background-color: #D493A7;
 }
 
 .train p {
@@ -163,13 +163,13 @@ nav a:hover {
 }
 
 .time h1 {
-    color: #664930;
+    color: #763A50;
     margin-bottom: 25px;
 }
 
 .time input {
     padding: 10px;
-    border: 2px solid #997E67;
+    border: 2px solid #D493A7;
     border-radius: 6px;
     font-size: 16px;
 }
@@ -179,26 +179,26 @@ nav a:hover {
     padding: 12px 35px;
     border: none;
     border-radius: 6px;
-    background-color: #664930;
-    color: #FFDBBB;
+    background-color: #763A50;
+    color: #F6D7E0;
     font-size: 16px;
     cursor: pointer;
 }
 
 .newrequest > button:hover {
-    background-color: #997E67;
+    background-color: #D493A7;
 }
 
 .requestcard {
     background-color: white;
-    border: 2px solid #997E67;
+    border: 2px solid #D493A7;
     border-radius: 10px;
     padding: 30px;
     text-align: left;
 }
 
 .requestcard h1 {
-    color: #664930;
+    color: #763A50;
     text-align: center;
     margin-bottom: 30px;
 }
@@ -206,11 +206,11 @@ nav a:hover {
 .requestcard p {
     font-size: 17px;
     padding: 8px 0;
-    border-bottom: 1px solid #FFDBBB;
+    border-bottom: 1px solid #F6D7E0;
 }
 
 .requestcard strong {
-    color: #664930;
+    color: #763A50;
 }
 
 .cancelrequest {
@@ -218,26 +218,26 @@ nav a:hover {
     margin: 50px auto;
     padding: 30px;
     background-color: white;
-    border: 2px solid #997E67;
+    border: 2px solid #D493A7;
     border-radius: 10px;
     text-align: center;
 }
 
 .cancelrequest h1 {
-    color: #664930;
+    color: #763A50;
 }
 
 .cancelrequest button {
     padding: 10px 20px;
     border: none;
     border-radius: 6px;
-    background-color: #664930;
-    color: #FFDBBB;
+    background-color: #763A50;
+    color: #F6D7E0;
     cursor: pointer;
 }
 
 .cancelrequest button:hover {
-    background-color: #997E67;
+    background-color: #D493A7;
 }
 
 .cancelride {
@@ -245,26 +245,26 @@ nav a:hover {
     margin: 50px auto;
     padding: 30px;
     background-color: white;
-    border: 2px solid #997E67;
+    border: 2px solid #D493A7;
     border-radius: 10px;
     text-align: center;
 }
 
 .cancelride h1 {
-    color: #664930;
+    color: #763A50;
 }
 
 .cancelride button {
     padding: 10px 20px;
     border: none;
     border-radius: 6px;
-    background-color: #664930;
-    color: #FFDBBB;
+    background-color: #763A50;
+    color: #F6D7E0;
     cursor: pointer;
 }
 
 .cancelride button:hover {
-    background-color: #997E67;
+    background-color: #D493A7;
 }
 
 @media (max-width: 600px) {
@@ -280,6 +280,7 @@ nav a:hover {
         padding: 15px;
         flex-wrap: wrap;
     }
+
 }
 
 
@@ -288,13 +289,13 @@ nav a:hover {
     margin: 60px auto;
     padding: 35px;
     background-color: white;
-    border: 2px solid #997E67;
+    border: 2px solid #D493A7;
     border-radius: 10px;
     text-align: center;
 }
 
 .login h1 {
-    color: #664930;
+    color: #763A50;
     margin-bottom: 25px;
 }
 
@@ -302,14 +303,14 @@ nav a:hover {
     width: 100%;
     padding: 12px;
     margin: 8px 0;
-    border: 2px solid #997E67;
+    border: 2px solid #D493A7;
     border-radius: 6px;
     font-size: 15px;
 }
 
 .login input:focus {
     outline: none;
-    border-color: #664930;
+    border-color: #763A50;
 }
 
 .login button {
@@ -318,14 +319,14 @@ nav a:hover {
     margin-top: 10px;
     border: none;
     border-radius: 6px;
-    background-color: #664930;
-    color: #FFDBBB;
+    background-color: #763A50;
+    color: #F6D7E0;
     font-size: 15px;
     cursor: pointer;
 }
 
 .login button:hover {
-    background-color: #997E67;
+    background-color: #D493A7;
 }
 
 .signup {
@@ -333,13 +334,13 @@ nav a:hover {
     margin: 60px auto;
     padding: 35px;
     background-color: white;
-    border: 2px solid #997E67;
+    border: 2px solid #D493A7;
     border-radius: 10px;
     text-align: center;
 }
 
 .signup h1 {
-    color: #664930;
+    color: #763A50;
     margin-bottom: 25px;
 }
 
@@ -347,14 +348,14 @@ nav a:hover {
     width: 100%;
     padding: 12px;
     margin: 8px 0;
-    border: 2px solid #997E67;
+    border: 2px solid #D493A7;
     border-radius: 6px;
     font-size: 15px;
 }
 
 .signup input:focus {
     outline: none;
-    border-color: #664930;
+    border-color: #763A50;
 }
 
 .signup button {
@@ -363,113 +364,250 @@ nav a:hover {
     margin-top: 10px;
     border: none;
     border-radius: 6px;
-    background-color: #664930;
-    color: #FFDBBB;
+    background-color: #763A50;
+    color: #F6D7E0;
     font-size: 15px;
     cursor: pointer;
 }
 
 .signup button:hover {
-    background-color: #997E67;
+    background-color: #D493A7;
 }
 
 .dashboard {
     width: 90%;
     max-width: 1100px;
-    margin: 50px auto;
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 30px;
+    margin: 40px auto;
+    color: #763A50;
 }
 
-.dashboard > h1 {
-    grid-column: 1;
-    color: #664930;
-    font-size: 42px;
-    margin: 0 0 15px 0;
+.dashboardTitle {
+    color: #763A50;
+    font-size: 40px;
+    margin: 0 0 14px;
 }
 
-.dashboard > p {
-    grid-column: 1;
-    color: #664930;
-    font-size: 17px;
-    margin: 5px 0;
+.dashboardHeader {
+    margin-bottom: 24px;
 }
 
-.dashboard input {
-    grid-column: 1;
-    width: 80%;
-    padding: 12px 18px;
-    border: 2px solid #997E67;
-    border-radius: 25px;
+.dashboardSearch {
+    width: min(100%, 460px);
+}
+
+.dashboardSearch .search {
+    width: 100%;
+}
+
+.dashboardSearch input {
+    display: block;
+    width: 100%;
+    height: 45px;
+    padding: 0 14px;
+    border: 1px solid #D493A7;
+    border-radius: 9px;
     background-color: white;
-    color: #664930;
-    font-size: 16px;
-    margin-bottom: 15px;
+    color: #763A50;
+    font-size: 15px;
 }
 
-.dashboard input:focus {
+.dashboardSearch input:focus {
     outline: none;
-    border-color: #664930;
+    border-color: #763A50;
 }
 
-.dashboard input::placeholder {
-    color: #997E67;
+.dashboardSearch input::placeholder {
+    color: #D493A7;
 }
 
-.rules {
-    grid-column: 2;
-    grid-row: 1 / 4;
-    background-color: white;
-    padding: 25px 30px;
-    border: 2px solid #997E67;
-    border-radius: 12px;
-    height: fit-content;
+.dashboardContent {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+    gap: 28px;
 }
 
-.rules h1 {
-    color: #664930;
-    font-size: 28px;
-    margin: 0 0 20px 0;
+.dashboardMain {
+    min-width: 0;
 }
 
-.rules p {
-    color: #664930;
-    font-size: 16px;
-    line-height: 1.5;
-    margin: 0;
-    padding: 20px 0;
-    border-bottom: 1px solid #997E67;
+.dashboardSection + .dashboardSection {
+    margin-top: 28px;
 }
 
-.rules p:last-child {
-    border-bottom: none;
-}
-.dashboard h1:last-child {
-    grid-column: 1 / 3;
-    color: #664930;
+.sectionTitle {
+    margin: 0 0 14px;
+    color: #763A50;
     font-size: 32px;
-    margin: 30px 0 0 0;
-    padding: 0;
-    background-color: transparent;
-    border: none;
 }
 
-@media (max-width: 700px) {
+.requestList {
+    display: grid;
+    justify-items: start;
+    gap: 14px;
+}
+
+.dashboard .dashboardRequestCard {
+    width: 100%;
+    max-width: 650px;
+    padding: 18px 20px;
+    background-color: white;
+    border: 1px solid #D493A7;
+    border-radius: 12px;
+}
+
+.requestCardHeader h2 {
+    margin: 0 0 14px;
+    color: #763A50;
+    font-size: 24px;
+}
+
+.rideInfo {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    row-gap: 4px;
+}
+
+.rideInfoItem {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 7px 0;
+    border-bottom: 1px solid #F6D7E0;
+    overflow-wrap: anywhere;
+}
+
+.rideInfoItem strong {
+    color: #763A50;
+    font-size: 15px;
+}
+
+.rideInfoItem span {
+    color: #763A50;
+    font-size: 16px;
+}
+
+.rideInfoItem .requestStatus {
+    color: #763A50;
+    font-size: 14px;
+    line-height: 1.35;
+}
+
+.peopleSharing {
+    margin-top: 15px;
+}
+
+.peopleSharing h3 {
+    margin: 0 0 6px;
+    color: #763A50;
+    font-size: 16px;
+}
+
+.memberList {
+    display: grid;
+    gap: 4px;
+}
+
+.dashboard .dashboardRequestCard .memberEmail {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: #763A50;
+    font-size: 14px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.requestAcceptButton {
+    margin-top: 14px;
+    padding: 9px 18px;
+    border: 1px solid #D493A7;
+    border-radius: 6px;
+    background-color: #F6D7E0;
+    color: #763A50;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.requestAcceptButton:hover {
+    background-color: white;
+}
+
+.dashboardRules {
+    width: 100%;
+    padding: 18px 20px;
+    background-color: white;
+    border: 1px solid #D493A7;
+    border-radius: 9px;
+}
+
+.dashboardRules h2 {
+    margin: 0 0 8px;
+    color: #763A50;
+    font-size: 22px;
+}
+
+.dashboardRules p {
+    margin: 0;
+    padding: 10px 0;
+    color: #763A50;
+    font-size: 14px;
+    line-height: 1.45;
+    border-bottom: 1px solid #D493A7;
+}
+
+.dashboardRules p:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.dashboardNotifications {
+    max-width: 650px;
+    margin-top: 16px;
+}
+
+.dashboardNotifications h2 {
+    margin: 0 0 5px;
+    color: #763A50;
+    font-size: 18px;
+}
+
+.dashboardNotifications p,
+.dashboardMessage {
+    margin: 4px 0;
+    color: #D493A7;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+@media (max-width: 750px) {
     .dashboard {
+        width: 90%;
+        margin: 30px auto;
+    }
+
+    .dashboardContent {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 24px;
+    }
+
+    .dashboardSearch {
+        width: 100%;
+    }
+
+    .dashboard .dashboardRequestCard {
+        max-width: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .rideInfo {
         grid-template-columns: 1fr;
     }
 
-    .dashboard > h1,
-    .dashboard > p,
-    .dashboard input,
-    .rules,
-    .dashboard h1:last-child {
-        grid-column: 1;
-        grid-row: auto;
-    }
-
-    .dashboard input {
-        width: 100%;
+    .dashboard .dashboardRequestCard {
+        padding: 16px;
     }
 }

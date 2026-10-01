@@ -5,6 +5,15 @@ const pool = require("./db");
 const app = express();
 const port = 5000;
 const amritaEmailEnding = "@am.students.amrita.edu";
+const requestSelect = `
+    SELECT r.*,
+        COALESCE((
+            SELECT json_agg(json_build_object('id', u.id, 'email', u.email) ORDER BY rm.id)
+            FROM request_members rm
+            JOIN users u ON u.id = rm.user_id
+            WHERE rm.request_id = r.id
+        ), '[]'::json) AS joined_members
+    FROM requests r`;
 
 app.use(cors());
 app.use(express.json());
@@ -67,25 +76,35 @@ app.post("/login", async (req, res) => {
 
 app.post("/requests", async (req, res) => {
     const { user_id, location, date, members, train, time } = req.body;
+    const client = await pool.connect();
 
     try {
-        const result = await pool.query(
+        await client.query("BEGIN");
+        const result = await client.query(
             `INSERT INTO requests (user_id, location, date, members, train, time, status)
-             VALUES ($1, $2, $3, $4, $5, $6, 'pending')
+             VALUES ($1, $2, $3, $4, $5, $6, CASE WHEN $4 <= 1 THEN 'accepted' ELSE 'pending' END)
              RETURNING *`,
             [user_id, location, date, members, train, time]
         );
+        await client.query(
+            "INSERT INTO request_members (request_id, user_id) VALUES ($1, $2)",
+            [result.rows[0].id, user_id]
+        );
+        await client.query("COMMIT");
         return res.status(201).json({ message: "Request created successfully", request: result.rows[0] });
     } catch (error) {
+        await client.query("ROLLBACK");
         console.error(error);
         return res.status(400).json({ message: "Could not create request" });
+    } finally {
+        client.release();
     }
 });
 
 app.get("/requests", async (req, res) => {
     try {
         const result = await pool.query(
-            "SELECT * FROM requests WHERE status <> 'cancelled' ORDER BY id DESC"
+            `${requestSelect} WHERE r.status <> 'cancelled' ORDER BY r.id DESC`
         );
         return res.json(result.rows);
     } catch (error) {
@@ -97,7 +116,7 @@ app.get("/requests", async (req, res) => {
 app.get("/requests/user/:userId", async (req, res) => {
     try {
         const result = await pool.query(
-            "SELECT * FROM requests WHERE user_id = $1 AND status <> 'cancelled' ORDER BY id DESC",
+            `${requestSelect} WHERE r.user_id = $1 AND r.status <> 'cancelled' ORDER BY r.id DESC`,
             [req.params.userId]
         );
         return res.json(result.rows);
@@ -109,45 +128,110 @@ app.get("/requests/user/:userId", async (req, res) => {
 
 app.post("/requests/:id/accept", async (req, res) => {
     const acceptingUserId = req.body.user_id;
+    const client = await pool.connect();
+    let transactionStarted = false;
 
     try {
-        const requestResult = await pool.query(
-            "SELECT * FROM requests WHERE id = $1",
+        await client.query("BEGIN");
+        transactionStarted = true;
+
+        const requestResult = await client.query(
+            "SELECT * FROM requests WHERE id = $1 FOR UPDATE",
             [req.params.id]
         );
 
         if (requestResult.rows.length === 0) {
+            await client.query("ROLLBACK");
             return res.status(404).json({ message: "Request not found" });
         }
 
         const rideRequest = requestResult.rows[0];
-        if (rideRequest.status !== "pending") {
-            return res.status(400).json({ message: "Request is no longer pending" });
+        if (rideRequest.status === "cancelled") {
+            await client.query("ROLLBACK");
+            return res.status(400).json({ message: "Request is no longer available" });
         }
 
         if (Number(rideRequest.user_id) === Number(acceptingUserId)) {
+            await client.query("ROLLBACK");
             return res.status(400).json({ message: "You cannot accept your own request" });
         }
 
-        const updateResult = await pool.query(
-            `UPDATE requests SET accepted_by = $1, status = 'accepted'
-             WHERE id = $2 AND status = 'pending' RETURNING *`,
-            [acceptingUserId, req.params.id]
+        const memberCountResult = await client.query(
+            "SELECT COUNT(*)::int AS count FROM request_members WHERE request_id = $1",
+            [req.params.id]
         );
+        const memberCount = memberCountResult.rows[0].count;
 
-        if (updateResult.rows.length === 0) {
-            return res.status(400).json({ message: "Request is no longer pending" });
+        if (memberCount >= Number(rideRequest.members)) {
+            await client.query("ROLLBACK");
+            return res.status(400).json({ message: "Request is full" });
         }
 
-        await pool.query(
-            "INSERT INTO notifications (user_id, message) VALUES ($1, $2)",
-            [rideRequest.user_id, "Your ride request has been accepted."]
+        const existingMember = await client.query(
+            "SELECT 1 FROM request_members WHERE request_id = $1 AND user_id = $2",
+            [req.params.id, acceptingUserId]
         );
+        if (existingMember.rows.length > 0) {
+            await client.query("ROLLBACK");
+            return res.status(400).json({ message: "You have already joined this request" });
+        }
 
-        return res.json({ message: "Request accepted successfully", request: updateResult.rows[0] });
+        const acceptingUser = await client.query(
+            "SELECT email FROM users WHERE id = $1",
+            [acceptingUserId]
+        );
+        if (acceptingUser.rows.length === 0) {
+            await client.query("ROLLBACK");
+            return res.status(400).json({ message: "User not found" });
+        }
+
+        await client.query(
+            "INSERT INTO request_members (request_id, user_id) VALUES ($1, $2)",
+            [req.params.id, acceptingUserId]
+        );
+        const updatedResult = await client.query(
+            `UPDATE requests SET status = CASE
+                WHEN (SELECT COUNT(*) FROM request_members WHERE request_id = $1) >= members THEN 'accepted'
+                ELSE 'pending'
+             END
+             WHERE id = $1 RETURNING *`,
+            [req.params.id]
+        );
+        const updatedRequest = await client.query(
+            `${requestSelect} WHERE r.id = $1`,
+            [req.params.id]
+        );
+        await client.query(
+            "INSERT INTO notifications (user_id, message) VALUES ($1, $2)",
+            [rideRequest.user_id, `Student with Amrita ID ${acceptingUser.rows[0].email} joined your request #${rideRequest.id}.`]
+        );
+        await client.query("COMMIT");
+        const request = { ...updatedResult.rows[0], joined_members: updatedRequest.rows[0].joined_members };
+
+        return res.json({ message: "Request accepted successfully", request });
     } catch (error) {
+        if (transactionStarted) await client.query("ROLLBACK");
         console.error(error);
         return res.status(400).json({ message: "Could not accept request" });
+    } finally {
+        client.release();
+    }
+});
+
+app.get("/requests/:id/members", async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT u.id, u.email
+             FROM request_members rm
+             JOIN users u ON u.id = rm.user_id
+             WHERE rm.request_id = $1
+             ORDER BY rm.id`,
+            [req.params.id]
+        );
+        return res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Could not get request members" });
     }
 });
 
@@ -186,7 +270,7 @@ app.delete("/requests/:id", async (req, res) => {
 app.get("/notifications/:userId", async (req, res) => {
     try {
         const result = await pool.query(
-            "SELECT * FROM notifications WHERE user_id = $1 ORDER BY created_at DESC",
+            "SELECT id, user_id, message FROM notifications WHERE user_id = $1 ORDER BY id DESC",
             [req.params.userId]
         );
         return res.json(result.rows);
@@ -245,6 +329,28 @@ async function startServer() {
                 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 is_read BOOLEAN NOT NULL DEFAULT FALSE
             );
+
+            CREATE TABLE IF NOT EXISTS request_members (
+                id SERIAL PRIMARY KEY,
+                request_id INTEGER NOT NULL REFERENCES requests(id),
+                user_id INTEGER NOT NULL REFERENCES users(id),
+                UNIQUE (request_id, user_id)
+            );
+
+            INSERT INTO request_members (request_id, user_id)
+            SELECT id, user_id FROM requests
+            ON CONFLICT (request_id, user_id) DO NOTHING;
+
+            INSERT INTO request_members (request_id, user_id)
+            SELECT id, accepted_by FROM requests WHERE accepted_by IS NOT NULL
+            ON CONFLICT (request_id, user_id) DO NOTHING;
+
+            UPDATE requests r
+            SET status = CASE
+                WHEN (SELECT COUNT(*) FROM request_members rm WHERE rm.request_id = r.id) >= r.members THEN 'accepted'
+                ELSE 'pending'
+            END
+            WHERE r.status <> 'cancelled';
         `);
 
         app.listen(port, () => {
