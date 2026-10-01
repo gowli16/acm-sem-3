@@ -1,0 +1,475 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #b8b7b5;
+    color: #664930;
+}
+
+nav {
+    width: 85%;
+    max-width: 900px;
+    margin: 25px auto;
+    padding: 8px;
+    background-color: #664930;
+    border: 3px solid #664930;
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+}
+
+nav a {
+    color: #ebe9e8;
+    text-decoration: none;
+    font-size: 15px;
+    padding: 8px 12px;
+}
+
+nav a:hover {
+    color: rgb(34, 13, 13);
+}
+.newrequest {
+    width: 500px;
+    margin: 50px auto;
+    background-color: white;
+    padding: 35px;
+    border-radius: 10px;
+    border: 2px solid #997E67;
+    text-align: center;
+}
+
+.location {
+    text-align: center;
+}
+
+.location h1 {
+    color: #664930;
+    margin-bottom: 25px;
+}
+
+.location select {
+    width: 250px;
+    padding: 10px;
+    border: 2px solid #997E67;
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: #FFDBBB;
+    color: #664930;
+}
+
+.date {
+    text-align: center;
+}
+
+.date h1 {
+    color: #664930;
+    margin-bottom: 25px;
+}
+
+.date input {
+    padding: 10px;
+    border: 2px solid #997E67;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.member {
+    text-align: center;
+}
+
+.member h1 {
+    color: #664930;
+    margin-bottom: 25px;
+}
+
+.member button {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 6px;
+    background-color: #664930;
+    color: #FFDBBB;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.member button:hover {
+    background-color: #997E67;
+}
+
+.member button:disabled {
+    background-color: #997E67;
+    cursor: not-allowed;
+}
+
+.member span {
+    display: inline-block;
+    margin: 0 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.train {
+    text-align: center;
+}
+
+.train h1 {
+    color: #664930;
+    margin-bottom: 25px;
+}
+
+.train label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.train select,
+.train input {
+    width: 250px;
+    padding: 10px;
+    border: 2px solid #997E67;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.train button {
+    margin-top: 15px;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 6px;
+    background-color: #664930;
+    color: #FFDBBB;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.train button:hover {
+    background-color: #997E67;
+}
+
+.train p {
+    margin-top: 25px;
+    font-size: 17px;
+}
+
+.time {
+    text-align: center;
+}
+
+.time h1 {
+    color: #664930;
+    margin-bottom: 25px;
+}
+
+.time input {
+    padding: 10px;
+    border: 2px solid #997E67;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.newrequest > button {
+    margin-top: 30px;
+    padding: 12px 35px;
+    border: none;
+    border-radius: 6px;
+    background-color: #664930;
+    color: #FFDBBB;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.newrequest > button:hover {
+    background-color: #997E67;
+}
+
+.requestcard {
+    background-color: white;
+    border: 2px solid #997E67;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: left;
+}
+
+.requestcard h1 {
+    color: #664930;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.requestcard p {
+    font-size: 17px;
+    padding: 8px 0;
+    border-bottom: 1px solid #FFDBBB;
+}
+
+.requestcard strong {
+    color: #664930;
+}
+
+.cancelrequest {
+    width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: white;
+    border: 2px solid #997E67;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.cancelrequest h1 {
+    color: #664930;
+}
+
+.cancelrequest button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    background-color: #664930;
+    color: #FFDBBB;
+    cursor: pointer;
+}
+
+.cancelrequest button:hover {
+    background-color: #997E67;
+}
+
+.cancelride {
+    width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: white;
+    border: 2px solid #997E67;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.cancelride h1 {
+    color: #664930;
+}
+
+.cancelride button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    background-color: #664930;
+    color: #FFDBBB;
+    cursor: pointer;
+}
+
+.cancelride button:hover {
+    background-color: #997E67;
+}
+
+@media (max-width: 600px) {
+    .newrequest,
+    .cancelrequest,
+    .cancelride {
+        width: 90%;
+        margin: 30px auto;
+    }
+
+    nav {
+        gap: 15px;
+        padding: 15px;
+        flex-wrap: wrap;
+    }
+}
+
+
+.login {
+    width: 400px;
+    margin: 60px auto;
+    padding: 35px;
+    background-color: white;
+    border: 2px solid #997E67;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.login h1 {
+    color: #664930;
+    margin-bottom: 25px;
+}
+
+.login input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 2px solid #997E67;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.login input:focus {
+    outline: none;
+    border-color: #664930;
+}
+
+.login button {
+    width: 100%;
+    padding: 11px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #664930;
+    color: #FFDBBB;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.login button:hover {
+    background-color: #997E67;
+}
+
+.signup {
+    width: 400px;
+    margin: 60px auto;
+    padding: 35px;
+    background-color: white;
+    border: 2px solid #997E67;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.signup h1 {
+    color: #664930;
+    margin-bottom: 25px;
+}
+
+.signup input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 2px solid #997E67;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.signup input:focus {
+    outline: none;
+    border-color: #664930;
+}
+
+.signup button {
+    width: 100%;
+    padding: 11px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #664930;
+    color: #FFDBBB;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.signup button:hover {
+    background-color: #997E67;
+}
+
+.dashboard {
+    width: 90%;
+    max-width: 1100px;
+    margin: 50px auto;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 30px;
+}
+
+.dashboard > h1 {
+    grid-column: 1;
+    color: #664930;
+    font-size: 42px;
+    margin: 0 0 15px 0;
+}
+
+.dashboard > p {
+    grid-column: 1;
+    color: #664930;
+    font-size: 17px;
+    margin: 5px 0;
+}
+
+.dashboard input {
+    grid-column: 1;
+    width: 80%;
+    padding: 12px 18px;
+    border: 2px solid #997E67;
+    border-radius: 25px;
+    background-color: white;
+    color: #664930;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.dashboard input:focus {
+    outline: none;
+    border-color: #664930;
+}
+
+.dashboard input::placeholder {
+    color: #997E67;
+}
+
+.rules {
+    grid-column: 2;
+    grid-row: 1 / 4;
+    background-color: white;
+    padding: 25px 30px;
+    border: 2px solid #997E67;
+    border-radius: 12px;
+    height: fit-content;
+}
+
+.rules h1 {
+    color: #664930;
+    font-size: 28px;
+    margin: 0 0 20px 0;
+}
+
+.rules p {
+    color: #664930;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 20px 0;
+    border-bottom: 1px solid #997E67;
+}
+
+.rules p:last-child {
+    border-bottom: none;
+}
+.dashboard h1:last-child {
+    grid-column: 1 / 3;
+    color: #664930;
+    font-size: 32px;
+    margin: 30px 0 0 0;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+}
+
+@media (max-width: 700px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard > h1,
+    .dashboard > p,
+    .dashboard input,
+    .rules,
+    .dashboard h1:last-child {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .dashboard input {
+        width: 100%;
+    }
+}

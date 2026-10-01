@@ -1,6 +1,5 @@
-import {useState} from "react";
-function Member(){
-    const [members, setMembers] = useState(1);
+
+function Member({members, setMembers}) {
     function decrease(){
         if(members>1){
             setMembers(members-1);

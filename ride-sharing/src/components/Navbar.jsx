@@ -8,6 +8,7 @@ function Navbar(){
                     <Link to="/new-request"> New Request </Link>
                     <Link to="/cancel-request"> Cancel Request </Link>
                     <Link to="/cancel-ride"> Cancel Ride </Link>
+                    <Link to="/login"> Login </Link>
                 </nav>
             </div>
         </>
