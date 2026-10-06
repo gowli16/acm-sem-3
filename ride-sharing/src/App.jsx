@@ -13,13 +13,10 @@ function ProtectedRoute({ children }) {
   if (!localStorage.getItem("userId")) {
     return <Navigate to="/login" replace />;
   }
-
   return children;
 }
 
 function App() {
-
-
   return (
     <>
        <BrowserRouter>

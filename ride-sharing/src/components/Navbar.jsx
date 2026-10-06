@@ -8,7 +8,6 @@ function Navbar(){
         localStorage.removeItem("userEmail");
         navigate("/login");
     }
-
     return(
         <>
             <div className="navbar">

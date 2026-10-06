@@ -6,14 +6,14 @@ const app = express();
 const port = 5000;
 const amritaEmailEnding = "@am.students.amrita.edu";
 const requestSelect = `
-    SELECT r.*,
-        COALESCE((
-            SELECT json_agg(json_build_object('id', u.id, 'email', u.email) ORDER BY rm.id)
-            FROM request_members rm
-            JOIN users u ON u.id = rm.user_id
-            WHERE rm.request_id = r.id
-        ), '[]'::json) AS joined_members
-    FROM requests r`;
+    select r.*,
+        coalesce((
+            select json_agg(json_build_object('id', u.id, 'email', u.email) order by rm.id)
+            from request_members rm
+            join users u on u.id = rm.user_id
+            where rm.request_id = r.id
+        ), '[]'::json) as joined_members
+    from requests r`;
 
 app.use(cors());
 app.use(express.json());
@@ -36,7 +36,7 @@ app.post("/signup", async (req, res) => {
 
     try {
         const result = await pool.query(
-            "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email",
+            "insert into users (email, password) values ($1, $2) returning id, email",
             [email, password]
         );
         return res.status(201).json({ message: "User created successfully", user: result.rows[0] });
@@ -59,7 +59,7 @@ app.post("/login", async (req, res) => {
 
     try {
         const result = await pool.query(
-            "SELECT id, email FROM users WHERE email = $1 AND password = $2",
+            "select id, email from users where email = $1 and password = $2",
             [email, password]
         );
 
@@ -81,13 +81,13 @@ app.post("/requests", async (req, res) => {
     try {
         await client.query("BEGIN");
         const result = await client.query(
-            `INSERT INTO requests (user_id, location, date, members, train, time, status)
-             VALUES ($1, $2, $3, $4, $5, $6, CASE WHEN $4 <= 1 THEN 'accepted' ELSE 'pending' END)
-             RETURNING *`,
+            `insert into requests (user_id, location, date, members, train, time, status)
+             values ($1, $2, $3, $4, $5, $6, case when $4 <= 1 then 'accepted' else 'pending' end)
+             returning *`,
             [user_id, location, date, members, train, time]
         );
         await client.query(
-            "INSERT INTO request_members (request_id, user_id) VALUES ($1, $2)",
+            "insert into request_members (request_id, user_id) values ($1, $2)",
             [result.rows[0].id, user_id]
         );
         await client.query("COMMIT");
@@ -104,7 +104,7 @@ app.post("/requests", async (req, res) => {
 app.get("/requests", async (req, res) => {
     try {
         const result = await pool.query(
-            `${requestSelect} WHERE r.status <> 'cancelled' ORDER BY r.id DESC`
+            `${requestSelect} where r.status <> 'cancelled' order by r.id desc`
         );
         return res.json(result.rows);
     } catch (error) {
@@ -116,7 +116,7 @@ app.get("/requests", async (req, res) => {
 app.get("/requests/user/:userId", async (req, res) => {
     try {
         const result = await pool.query(
-            `${requestSelect} WHERE r.user_id = $1 AND r.status <> 'cancelled' ORDER BY r.id DESC`,
+            `${requestSelect} where r.user_id = $1 and r.status <> 'cancelled' order by r.id desc`,
             [req.params.userId]
         );
         return res.json(result.rows);
@@ -136,7 +136,7 @@ app.post("/requests/:id/accept", async (req, res) => {
         transactionStarted = true;
 
         const requestResult = await client.query(
-            "SELECT * FROM requests WHERE id = $1 FOR UPDATE",
+            "select * from requests where id = $1 for update",
             [req.params.id]
         );
 
@@ -157,7 +157,7 @@ app.post("/requests/:id/accept", async (req, res) => {
         }
 
         const memberCountResult = await client.query(
-            "SELECT COUNT(*)::int AS count FROM request_members WHERE request_id = $1",
+            "select count(*)::int as count from request_members where request_id = $1",
             [req.params.id]
         );
         const memberCount = memberCountResult.rows[0].count;
@@ -168,7 +168,7 @@ app.post("/requests/:id/accept", async (req, res) => {
         }
 
         const existingMember = await client.query(
-            "SELECT 1 FROM request_members WHERE request_id = $1 AND user_id = $2",
+            "select 1 from request_members where request_id = $1 and user_id = $2",
             [req.params.id, acceptingUserId]
         );
         if (existingMember.rows.length > 0) {
@@ -177,7 +177,7 @@ app.post("/requests/:id/accept", async (req, res) => {
         }
 
         const acceptingUser = await client.query(
-            "SELECT email FROM users WHERE id = $1",
+            "select email from users where id = $1",
             [acceptingUserId]
         );
         if (acceptingUser.rows.length === 0) {
@@ -186,23 +186,23 @@ app.post("/requests/:id/accept", async (req, res) => {
         }
 
         await client.query(
-            "INSERT INTO request_members (request_id, user_id) VALUES ($1, $2)",
+            "insert into request_members (request_id, user_id) values ($1, $2)",
             [req.params.id, acceptingUserId]
         );
         const updatedResult = await client.query(
-            `UPDATE requests SET status = CASE
-                WHEN (SELECT COUNT(*) FROM request_members WHERE request_id = $1) >= members THEN 'accepted'
-                ELSE 'pending'
-             END
-             WHERE id = $1 RETURNING *`,
+            `update requests set status = case
+                when (select count(*) from request_members where request_id = $1) >= members then 'accepted'
+                else'pending'
+             end
+             where id = $1 returning *`,
             [req.params.id]
         );
         const updatedRequest = await client.query(
-            `${requestSelect} WHERE r.id = $1`,
+            `${requestSelect} where r.id = $1`,
             [req.params.id]
         );
         await client.query(
-            "INSERT INTO notifications (user_id, message) VALUES ($1, $2)",
+            "insert into notifications (user_id, message) values ($1, $2)",
             [rideRequest.user_id, `Student with Amrita ID ${acceptingUser.rows[0].email} joined your request #${rideRequest.id}.`]
         );
         await client.query("COMMIT");
@@ -221,11 +221,11 @@ app.post("/requests/:id/accept", async (req, res) => {
 app.get("/requests/:id/members", async (req, res) => {
     try {
         const result = await pool.query(
-            `SELECT u.id, u.email
-             FROM request_members rm
-             JOIN users u ON u.id = rm.user_id
-             WHERE rm.request_id = $1
-             ORDER BY rm.id`,
+            `select u.id, u.email
+             from request_members rm
+             join users u on u.id = rm.user_id
+             where rm.request_id = $1
+             order by rm.id`,
             [req.params.id]
         );
         return res.json(result.rows);
@@ -240,7 +240,7 @@ app.delete("/requests/:id", async (req, res) => {
 
     try {
         const requestResult = await pool.query(
-            "SELECT user_id, status FROM requests WHERE id = $1",
+            "select user_id, status from requests where id = $1",
             [req.params.id]
         );
 
@@ -257,7 +257,7 @@ app.delete("/requests/:id", async (req, res) => {
         }
 
         await pool.query(
-            "UPDATE requests SET status = 'cancelled' WHERE id = $1",
+            "update requests set status = 'cancelled' where id = $1",
             [req.params.id]
         );
         return res.json({ message: "Request cancelled successfully" });
@@ -270,7 +270,7 @@ app.delete("/requests/:id", async (req, res) => {
 app.get("/notifications/:userId", async (req, res) => {
     try {
         const result = await pool.query(
-            "SELECT id, user_id, message FROM notifications WHERE user_id = $1 ORDER BY id DESC",
+            "select id, user_id, message from notifications where user_id = $1 order by id desc",
             [req.params.userId]
         );
         return res.json(result.rows);
@@ -283,7 +283,7 @@ app.get("/notifications/:userId", async (req, res) => {
 app.post("/notifications/:id/read", async (req, res) => {
     try {
         const result = await pool.query(
-            "UPDATE notifications SET is_read = TRUE WHERE id = $1 AND user_id = $2 RETURNING id",
+            "update notifications set is_read = true where id = $1 and user_id = $2 returning id",
             [req.params.id, req.body.user_id]
         );
 
@@ -300,57 +300,57 @@ app.post("/notifications/:id/read", async (req, res) => {
 
 async function startServer() {
     try {
-        await pool.query("SELECT 1");
+        await pool.query("select 1");
         console.log("Database connected");
 
         await pool.query(`
-            CREATE TABLE IF NOT EXISTS users (
-                id SERIAL PRIMARY KEY,
-                email TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL
+            create table if not exists users (
+                id serial primary key,
+                email text not null unique,
+                password text not null
             );
 
-            CREATE TABLE IF NOT EXISTS requests (
-                id SERIAL PRIMARY KEY,
-                user_id INTEGER NOT NULL REFERENCES users(id),
-                location TEXT NOT NULL,
-                date DATE NOT NULL,
-                members INTEGER NOT NULL,
-                train TEXT NOT NULL,
-                time TEXT NOT NULL,
-                status TEXT NOT NULL DEFAULT 'pending',
-                accepted_by INTEGER REFERENCES users(id)
+            create table if not exists requests (
+                id serial primary key,
+                user_id integer not NULL REFERENCES users(id),
+                location text not null,
+                date date not null,
+                members integer not null,
+                train text not null,
+                time text not null,
+                status text not null DEFAULT 'pending',
+                accepted_by integer references users(id)
             );
 
-            CREATE TABLE IF NOT EXISTS notifications (
-                id SERIAL PRIMARY KEY,
-                user_id INTEGER NOT NULL REFERENCES users(id),
-                message TEXT NOT NULL,
-                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                is_read BOOLEAN NOT NULL DEFAULT FALSE
+            create table if not exists notifications (
+                id serial primary key,
+                user_id integer not null references users(id),
+                message text not null,
+                created_at timestamp not null DEFAULT CURRENT_TIMESTAMP,
+                is_read boolean not null DEFAULT FALSE
             );
 
-            CREATE TABLE IF NOT EXISTS request_members (
-                id SERIAL PRIMARY KEY,
-                request_id INTEGER NOT NULL REFERENCES requests(id),
-                user_id INTEGER NOT NULL REFERENCES users(id),
-                UNIQUE (request_id, user_id)
+            create table if not exists request_members (
+                id serial primary key,
+                request_id integer not null references requests(id),
+                user_id integer not null references users(id),
+                unique (request_id, user_id)
             );
 
-            INSERT INTO request_members (request_id, user_id)
-            SELECT id, user_id FROM requests
-            ON CONFLICT (request_id, user_id) DO NOTHING;
+            insert into request_members (request_id, user_id)
+            select id, user_id from requests
+            on conflict (request_id, user_id) do nothing;
 
-            INSERT INTO request_members (request_id, user_id)
-            SELECT id, accepted_by FROM requests WHERE accepted_by IS NOT NULL
-            ON CONFLICT (request_id, user_id) DO NOTHING;
+            insert into request_members (request_id, user_id)
+            select id, accepted_by from requests where accepted_by is not null
+            on conflict (request_id, user_id) do nothing;
 
-            UPDATE requests r
-            SET status = CASE
-                WHEN (SELECT COUNT(*) FROM request_members rm WHERE rm.request_id = r.id) >= r.members THEN 'accepted'
+            update requests r
+            set status = case
+                when (select count(*) from request_members rm where rm.request_id = r.id) >= r.members then 'accepted'
                 ELSE 'pending'
-            END
-            WHERE r.status <> 'cancelled';
+            end
+            where r.status <> 'cancelled';
         `);
 
         app.listen(port, () => {

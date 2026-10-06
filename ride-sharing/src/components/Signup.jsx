@@ -36,7 +36,6 @@ function Signup() {
             setIsSubmitting(false);
         }
     }
-
     return (
         <div className="signup">
             <form onSubmit={handleSubmit} noValidate>
