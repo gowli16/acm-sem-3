@@ -3,7 +3,7 @@ const cors = require("cors");
 const pool = require("./db");
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 const amritaEmailEnding = "@am.students.amrita.edu";
 const requestSelect = `
     select r.*,
@@ -348,7 +348,7 @@ async function startServer() {
             update requests r
             set status = case
                 when (select count(*) from request_members rm where rm.request_id = r.id) >= r.members then 'accepted'
-                ELSE 'pending'
+                else 'pending'
             end
             where r.status <> 'cancelled';
         `);
