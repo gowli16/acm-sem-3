@@ -3,6 +3,9 @@ const cors = require("cors");
 const pool = require("./db");
 
 const app = express();
+app.get("/", (req, res) => {
+    res.send("Ride-sharing backend is running!");
+});
 const port = process.env.PORT || 5000;
 const amritaEmailEnding = "@am.students.amrita.edu";
 const requestSelect = `
