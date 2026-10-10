@@ -1,7 +1,6 @@
 
 import { useEffect, useState } from "react";
-
-const apiUrl = "http://localhost:5000";
+import { apiUrl } from "../api";
 
 function Cancelrequest() {
   const userId = localStorage.getItem("userId");
