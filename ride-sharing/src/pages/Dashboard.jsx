@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Searchbar from "../components/Searchbar";
-
-const apiUrl = "http://localhost:5000";
+import { apiUrl } from "../api";
 
 function formatDate(date) {
     const [year, month, day] = String(date).slice(0, 10).split("-").map(Number);
