@@ -33,6 +33,30 @@ nav a {
 nav a:hover {
     color: rgb(34, 13, 13);
 }
+
+nav .logoutButton {
+    padding: 8px 14px;
+    border: 1px solid #FFF7F8;
+    border-radius: 20px;
+    background-color: #FFF7F8;
+    color: #763A50;
+    font-size: 15px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+nav .logoutButton:hover {
+    background-color: #D493A7;
+    border-color: #D493A7;
+    color: #763A50;
+}
+
+nav .logoutButton:focus-visible,
+nav a:focus-visible {
+    outline: 2px solid #FFF7F8;
+    outline-offset: 3px;
+}
 .newrequest {
     width: 500px;
     margin: 50px auto;

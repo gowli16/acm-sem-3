@@ -16,6 +16,13 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
+function GuestOnlyRoute({ children }) {
+  if (localStorage.getItem("userId")) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return children;
+}
+
 function App() {
   return (
     <>
@@ -23,8 +30,8 @@ function App() {
             <Navbar/>
             <Routes>
               <Route path="/" element={<Homepage />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
+              <Route path="/login" element={<GuestOnlyRoute><Login /></GuestOnlyRoute>} />
+              <Route path="/signup" element={<GuestOnlyRoute><Signup /></GuestOnlyRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/cancel-request" element={<ProtectedRoute><Cancelrequest /></ProtectedRoute>} />
               <Route path="/new-request" element={<ProtectedRoute><Newrequest /></ProtectedRoute>} />

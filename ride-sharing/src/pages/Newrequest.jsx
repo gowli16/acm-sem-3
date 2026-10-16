@@ -17,6 +17,35 @@ function Newrequest() {
     const [message, setMessage] = useState("");
     const [isCreating, setIsCreating] = useState(false);
 
+    function handleNext() {
+        if (step === 1 && !["Kayamkulam", "Karunagappalli"].includes(location)) {
+            setMessage("Please select a station");
+            return;
+        }
+        if (step === 2) {
+            const today = new window.Date();
+            const minDate = [
+                today.getFullYear(),
+                String(today.getMonth() + 1).padStart(2, "0"),
+                String(today.getDate()).padStart(2, "0")
+            ].join("-");
+            if (!date || date < minDate) {
+                setMessage("Please select today or a future date");
+                return;
+            }
+        }
+        if (step === 4 && !train) {
+            setMessage("Please enter your train time");
+            return;
+        }
+        if (step === 5 && !time) {
+            setMessage("Please enter your departure time");
+            return;
+        }
+        setMessage("");
+        setStep(step + 1);
+    }
+
     async function createRequest() {
         const userId = localStorage.getItem("userId");
         if (!userId) {
@@ -85,7 +114,7 @@ function Newrequest() {
             />}
             {message && <p role="alert">{message}</p>}
             {step < 6 && (
-                <button onClick={() => setStep(step + 1)}>Next</button>
+                <button type="button" onClick={handleNext}>Next</button>
             )}
         </div>
     );

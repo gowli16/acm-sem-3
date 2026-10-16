@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const pool = require("./db");
+const bcrypt = require("bcryptjs");
 
 const app = express();
 app.get("/", (req, res) => {
@@ -33,14 +34,15 @@ app.post("/signup", async (req, res) => {
         return res.status(400).json({ message: "Please use your Amrita ID" });
     }
 
-    if (typeof password !== "string" || password.length === 0) {
-        return res.status(400).json({ message: "Email and password are required" });
+    if (typeof password !== "string" || password.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters long" });
     }
 
     try {
+        const passwordHash = await bcrypt.hash(password, 12);
         const result = await pool.query(
             "insert into users (email, password) values ($1, $2) returning id, email",
-            [email, password]
+            [email, passwordHash]
         );
         return res.status(201).json({ message: "User created successfully", user: result.rows[0] });
     } catch (error) {
@@ -62,15 +64,31 @@ app.post("/login", async (req, res) => {
 
     try {
         const result = await pool.query(
-            "select id, email from users where email = $1 and password = $2",
-            [email, password]
+            "select id, email, password from users where email = $1",
+            [email]
         );
 
         if (result.rows.length === 0) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        return res.json({ id: result.rows[0].id, email: result.rows[0].email });
+        const user = result.rows[0];
+        const isBcryptHash = /^\$2[aby]\$/.test(user.password);
+        const passwordMatches = isBcryptHash
+            ? await bcrypt.compare(password, user.password)
+            : password === user.password;
+
+        if (!passwordMatches) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        // Upgrade legacy plain-text passwords after a successful login.
+        if (!isBcryptHash) {
+            const passwordHash = await bcrypt.hash(password, 12);
+            await pool.query("update users set password = $1 where id = $2", [passwordHash, user.id]);
+        }
+
+        return res.json({ id: user.id, email: user.email });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Server error" });
@@ -79,10 +97,53 @@ app.post("/login", async (req, res) => {
 
 app.post("/requests", async (req, res) => {
     const { user_id, location, date, members, train, time } = req.body;
+
+    if (!Number.isInteger(Number(user_id)) || Number(user_id) <= 0) {
+        return res.status(400).json({ message: "Please log in before creating a request" });
+    }
+    if (!["Kayamkulam", "Karunagappalli"].includes(location)) {
+        return res.status(400).json({ message: "Please select a valid station" });
+    }
+    if (typeof date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return res.status(400).json({ message: "Please select a valid departure date" });
+    }
+    if (!Number.isInteger(Number(members)) || Number(members) < 1 || Number(members) > 3) {
+        return res.status(400).json({ message: "A ride must have between 1 and 3 members" });
+    }
+    if (typeof train !== "string" || !/^([01]\d|2[0-3]):[0-5]\d$/.test(train)) {
+        return res.status(400).json({ message: "Please enter a valid train time" });
+    }
+    if (typeof time !== "string" || !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) {
+        return res.status(400).json({ message: "Please enter a valid departure time" });
+    }
+
     const client = await pool.connect();
 
     try {
         await client.query("BEGIN");
+        const dateCheck = await client.query(
+            "select $1::date < timezone('Asia/Kolkata', now())::date as is_past",
+            [date]
+        );
+        if (dateCheck.rows[0].is_past) {
+            await client.query("ROLLBACK");
+            return res.status(400).json({ message: "Departure date cannot be in the past" });
+        }
+
+        await client.query("select pg_advisory_xact_lock($1::integer, hashtext($2))", [Number(user_id), date]);
+        const existingRide = await client.query(
+            `select 1
+             from request_members rm
+             join requests r on r.id = rm.request_id
+             where rm.user_id = $1 and r.date = $2 and r.status <> 'cancelled'
+             limit 1`,
+            [user_id, date]
+        );
+        if (existingRide.rows.length > 0) {
+            await client.query("ROLLBACK");
+            return res.status(409).json({ message: "You can only be part of one auto on a given day" });
+        }
+
         const result = await client.query(
             `insert into requests (user_id, location, date, members, train, time, status)
              values ($1, $2, $3, $4, $5, $6, case when $4 <= 1 then 'accepted' else 'pending' end)
@@ -179,6 +240,24 @@ app.post("/requests/:id/accept", async (req, res) => {
             return res.status(400).json({ message: "You have already joined this request" });
         }
 
+        await client.query(
+            "select pg_advisory_xact_lock($1::integer, hashtext($2::text))",
+            [Number(acceptingUserId), String(rideRequest.date).slice(0, 10)]
+        );
+        const sameDayRide = await client.query(
+            `select 1
+             from request_members rm
+             join requests r on r.id = rm.request_id
+             where rm.user_id = $1 and r.date = $2 and r.id <> $3
+               and r.status <> 'cancelled'
+             limit 1`,
+            [acceptingUserId, rideRequest.date, rideRequest.id]
+        );
+        if (sameDayRide.rows.length > 0) {
+            await client.query("ROLLBACK");
+            return res.status(409).json({ message: "You are already part of an auto on this date" });
+        }
+
         const acceptingUser = await client.query(
             "select email from users where id = $1",
             [acceptingUserId]
@@ -243,7 +322,7 @@ app.delete("/requests/:id", async (req, res) => {
 
     try {
         const requestResult = await pool.query(
-            "select user_id, status from requests where id = $1",
+            "select user_id, status, date, time from requests where id = $1",
             [req.params.id]
         );
 
@@ -257,6 +336,15 @@ app.delete("/requests/:id", async (req, res) => {
 
         if (requestResult.rows[0].status === "cancelled") {
             return res.status(400).json({ message: "Request is already cancelled" });
+        }
+
+        const departureCheck = await pool.query(
+            `select ($1::date + $2::time) <=
+                (timezone('Asia/Kolkata', now()) + interval '24 hours') as within_24_hours`,
+            [requestResult.rows[0].date, requestResult.rows[0].time]
+        );
+        if (departureCheck.rows[0].within_24_hours) {
+            return res.status(400).json({ message: "Requests can only be cancelled more than 24 hours before departure" });
         }
 
         await pool.query(

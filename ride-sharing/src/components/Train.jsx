@@ -5,26 +5,24 @@ function Train({ train, setTrain, location }) {
     const [leaveTime, setLeaveTime] = useState("");
 
     function calculateTime() {
-
-        let time = train.split(":");
-
-        let hours = Number(time[0]);
-        let minutes = Number(time[1]);
-
-        if (location === "Karunagappalli") {
-            minutes = minutes - 30;
+        if (!train) {
+            setLeaveTime("");
+            return;
         }
 
-        if (location === "Kayamkulam") {
-            minutes = minutes - 45;
-        }
+        const [trainHours, trainMinutes] = train.split(":").map(Number);
+        const minutesBefore = location === "Karunagappalli" ? 30 : location === "Kayamkulam" ? 45 : 0;
+        const totalMinutes = (trainHours * 60 + trainMinutes - minutesBefore + 1440) % 1440;
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
 
-        if (minutes < 0) {
-            minutes = minutes + 60;
-            hours = hours - 1;
-        }
-
-        setLeaveTime(hours + ":" + minutes);
+        setLeaveTime(
+            new window.Date(2000, 0, 1, hours, minutes).toLocaleTimeString("en-IN", {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true
+            })
+        );
     }
 
     return (

@@ -12,12 +12,21 @@ function Navbar(){
         <>
             <div className="navbar">
                 <nav>
-                    <Link to="/dashboard"> Home </Link>
-                    <Link to="/new-request"> New Request </Link>
-                    <Link to="/cancel-request"> Cancel Request </Link>
-                    <Link to="/cancel-ride"> Cancel Ride </Link>
-                    <Link to="/login"> Login </Link>
-                    {isLoggedIn && <button type="button" onClick={handleLogout}>Logout</button>}
+                    {isLoggedIn ? (
+                        <>
+                            <Link to="/dashboard">Home</Link>
+                            <Link to="/new-request">New Request</Link>
+                            <Link to="/cancel-request">Cancel Request</Link>
+                            <Link to="/cancel-ride">Cancel Ride</Link>
+                            <button className="logoutButton" type="button" onClick={handleLogout}>Logout</button>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/">Home</Link>
+                            <Link to="/login">Login</Link>
+                            <Link to="/signup">Sign Up</Link>
+                        </>
+                    )}
                 </nav>
             </div>
         </>
