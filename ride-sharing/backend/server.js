@@ -240,6 +240,24 @@ app.post("/requests/:id/accept", async (req, res) => {
             return res.status(400).json({ message: "You have already joined this request" });
         }
 
+        await client.query(
+            "select pg_advisory_xact_lock($1::integer, hashtext($2::text))",
+            [Number(acceptingUserId), String(rideRequest.date).slice(0, 10)]
+        );
+        const sameDayRide = await client.query(
+            `select 1
+             from request_members rm
+             join requests r on r.id = rm.request_id
+             where rm.user_id = $1 and r.date = $2 and r.id <> $3
+               and r.status <> 'cancelled'
+             limit 1`,
+            [acceptingUserId, rideRequest.date, rideRequest.id]
+        );
+        if (sameDayRide.rows.length > 0) {
+            await client.query("ROLLBACK");
+            return res.status(409).json({ message: "You are already part of an auto on this date" });
+        }
+
         const acceptingUser = await client.query(
             "select email from users where id = $1",
             [acceptingUserId]
@@ -304,7 +322,7 @@ app.delete("/requests/:id", async (req, res) => {
 
     try {
         const requestResult = await pool.query(
-            "select user_id, status from requests where id = $1",
+            "select user_id, status, date, time from requests where id = $1",
             [req.params.id]
         );
 
@@ -318,6 +336,15 @@ app.delete("/requests/:id", async (req, res) => {
 
         if (requestResult.rows[0].status === "cancelled") {
             return res.status(400).json({ message: "Request is already cancelled" });
+        }
+
+        const departureCheck = await pool.query(
+            `select ($1::date + $2::time) <=
+                (timezone('Asia/Kolkata', now()) + interval '24 hours') as within_24_hours`,
+            [requestResult.rows[0].date, requestResult.rows[0].time]
+        );
+        if (departureCheck.rows[0].within_24_hours) {
+            return res.status(400).json({ message: "Requests can only be cancelled more than 24 hours before departure" });
         }
 
         await pool.query(
